@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background-image: url(backall.jpg);
+}
+</style>
+<link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<meta charset="ISO-8859-1">
+<title>Admin Home</title>
+</head>
+<body>
+
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a onclick = "LogOut()" id="appLogout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div>
+    	<a class="btn waves-effect waves-light" href="./adminCreateNewUser.html">Create User</a>
+
+</div>
+
+<div class="container">
+	<div class="table-responsive">
+	<h1>Sellers</h1>
+	<br />
+	<table class="table table-bordered table-striped" id="sellers_table">
+		<tr>
+			<th>Email</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Delete</th>
+			<th>Edit</th>
+		</tr>
+	</table>
+	</div>
+</div>
+
+<div class="container">
+	<div class="table-responsive">
+	<h1>Buyers</h1>
+	<br />
+	<table class="table table-bordered table-striped" id="buyers_table">
+		<tr>
+			<th>Email</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Delete</th>
+			<th>Edit</th>
+		</tr>
+	</table>
+	</div>
+</div>
+
+
+<script>
+$(document).ready(function(){
+	
+	checkAdmin();
+	
+	$.getJSON("./api/admin/sellers", function(data){
+		var seller_data = '';
+		$.each(data, function(key,value){
+			seller_data += '<tr>';
+			seller_data += '<td>'+value.email+'</td>';
+			seller_data += '<td>'+value.firstName+'</td>';
+			seller_data += '<td>'+value.lastName+'</td>';
+			seller_data += '<td>' + '<a class="btn waves-effect waves-light"  id=' + value.email + ' onclick="deleteUser(id)">Delete</a>' + '</td>';
+			seller_data += '<td>' + '<a class="btn waves-effect waves-light"  id=' + value.email + ' onclick="editUser(id)">Edit</a>' + '</td>';
+			seller_data += '</tr>';
+		});
+		$('#sellers_table').append(seller_data);
+	});
+	
+	$.getJSON("./api/admin/buyers", function(data){
+		var buyer_data = '';
+		$.each(data, function(key,value){
+			buyer_data += '<tr>';
+			buyer_data += '<td>'+value.email+'</td>';
+			buyer_data += '<td>'+value.firstName+'</td>';
+			buyer_data += '<td>'+value.lastName+'</td>';
+			buyer_data += '<td>' + '<a class="btn waves-effect waves-light"  id=' + value.email + ' onclick="deleteUser(id)">Delete</a>' + '</td>';			
+			buyer_data += '<td>' + '<a class="btn waves-effect waves-light"  id=' + value.email + ' onclick="editUser(id)">Edit</a>' + '</td>';
+			buyer_data += '</tr>';
+		});
+		$('#buyers_table').append(buyer_data);
+	});
+});
+
+function deleteUser(email){
+	var confirmDelete = confirm("Are you sure you want to delete " + email);
+	if(confirmDelete){
+		$.ajax({
+		    type : "DELETE",
+		    url : "./api/admin/deleteUser/" + email,
+		    success: function (result) {       
+				alert(email + " Deleted");
+				document.location.href = "./adminHome.html";
+		    },
+		    error: function (e) {
+		        console.log(e);
+		    }
+		});
+	}	
+}
+
+function editUser(email){
+	//alert(x);
+	document.location.href = "./adminEditUser.html?email="+email;
+}
+
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+function checkAdmin() {
+	var admin=getCookie("userType");
+	if (admin != "admin") {		
+		document.location.href = "./index.html";
+	}
+}
+
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body {
+  background-image: url(backall.jpg);
+}
+</style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>View Order</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a id="appLogout" onclick="LogOut()">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div id="index-banner">
+
+    <div class="container">
+        <h1 class="header center black-text text-lighten-2">Your Orders</h1>
+    </div>
+</div>
+<div>
+    <div class="row">
+      
+        <div class="input-field col s6 center">
+            <a class="btn waves-effect waves-light" href="./buyerHome.html">Home</a>
+ 
+        </div>
+    </div>
+    <div class="row">
+        <table id="table" >
+            <thead>
+         <tr><th>Id</th><th>Order Date</th><th>Order Amount</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+</script>
+<script>
+
+</script>
+<script>
+$(document).ready(function() {
+	$('select').material_select();
+	
+	var email=getCookie("email");	
+	
+	
+     fetch('./api/order/'+email, {
+         method: 'get',
+         headers: {
+             'Accept': 'application/json',
+             'Content-Type': 'application/json'
+         },
+       //  body: JSON.stringify(data)
+     }).then(function(response) {
+         return response.json();
+     }).then(function(data) {
+         // response.json();
+         console.log(data);
+
+         let table = '';
+         let rows = data.length;        
+
+         for (let r = 0; r < rows; r++) {
+             table += '<tr class="row">';
+             table += '<td>' + data[r].id + '</td>';
+             table += '<td>' + data[r].orderDate + '</td>';
+             table += '<td>' + data[r].amount + '</td>';             
+             table += '<td>' + '<button type="button" class="btn waves-effect waves-light"  id=' + data[r].id + ' onclick="viewItems(id)">View Details</a>' + '</td>';
+             
+             table += '</tr>';
+         }
+
+         $('#table').find('tbody').empty();
+         $("#table").append(table);
+                  
+        
+     });
+});
+
+function viewItems(id){
+	window.location.href = './ViewOrderDetails.html?id='+id;
+}
+
+	
+</script>
+
+
+<script>
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+
+function goToHome(){
+	if(getCookie("userType")=="buyer"){
+		document.location.href = "./buyerHome.html";
+    }else{
+    	document.location.href = "./SellerHome.html";
+    }		
+}
+
+function checkUser() {
+	var userType=getCookie("userType");
+	if (userType != "buyer") {		
+		document.location.href = "./index.html";
+	}
+}
+
+$(function() {
+	checkUser();
+});  
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+</body>
+
+</html>
+

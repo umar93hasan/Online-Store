@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+form {border: 3px solid #f1f1f1;}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url(back6.jpg);
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+</style>
+<meta charset="ISO-8859-1">
+<title>Login</title>
+
+</head>
+<body>
+
+<form id="login-form" style="border: 1px solid #ccc; width: 500px; position: relative; margin: 0 auto; overflow: hidden; text-align: center;">
+<h2>Login Form</h2>
+  <div class="imgcontainer">
+    <img src="img_avatar2.png" alt="Avatar" class="avatar">
+  </div>
+
+  <div class="container">
+    <label style="float: left;" for="email"><b>Email / Username</b></label>
+    <input type="text" placeholder="Enter Email" name="email" id="email" required>
+
+    <label for="password" style="float: left;"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="password" id="password" required>
+        
+    <button type="button" onClick="login()">Login</button>   
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+    <button type="button" class="cancelbtn" onclick="goToIndex()">Cancel</button>
+  </div>
+</form>
+
+<script>
+	$(document).ready(function(){
+		checkCookie(); 
+	});
+	
+	function goToIndex(){
+		document.location.href = "./index.html";
+	}
+
+	function goToHome(){
+		if(getCookie("userType")=="buyer"){    		
+    		document.location.href = "./buyerHome.html";
+    	}else if(getCookie("userType")=="seller"){
+    		document.location.href = "./SellerHome.html";
+    	}else if(getCookie("userType")=="admin"){
+    		document.location.href = "./adminHome.html";
+    	}		
+	}
+	
+	function login(){
+		const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        
+        if(email.length==0 || password.length==0){
+        	alert("Enter email and password");
+        	return;
+        }
+        /*if(!validateEmail(email)){
+        	alert("Enter a valid email.");
+        	return;
+        }
+        if(!validatePassword(password)){
+        	alert("Password must 6 or more characters.");
+        	return;
+        }*/
+        
+        var data = {            
+                "email": email,
+                "password": password
+			};
+        
+        fetch('./api/user/login/', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(function (response) {
+            return response.json();
+        }).then((data) => {
+            //console.log(data);
+            if(data.userType=="error"){
+            	alert("Invalid Login");
+            }else{
+            	setCookie("email",data.email,1);
+            	setCookie("firstName",data.firstName,1);
+            	setCookie("lastName",data.lastName,1);
+            	setCookie("userType",data.userType,1);
+            	if(data.userType=="buyer"){
+            		//alert("Buyer Logged In "+ data.firstName);
+            		document.location.href = "./buyerHome.html";
+            	}else if(data.userType=="seller"){
+            		//alert("Seller Logged In "+ data.firstName);
+            		document.location.href = "./SellerHome.html";
+            	}else if(data.userType=="admin"){
+            		document.location.href = "./adminHome.html";
+            	}
+            }
+        })
+        
+	}
+	
+	function validateEmail(email) {
+		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(email);
+    }
+	function validatePassword(pw){
+    	if(pw.length<6)
+    		return false;
+    	return true;
+    }
+	function setCookie(cname,cvalue,exdays) {
+		  var d = new Date();
+		  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		  var expires = "expires=" + d.toGMTString();
+		  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+		}
+	function getCookie(cname) {
+		var name = cname + "=";
+		var decodedCookie = decodeURIComponent(document.cookie);
+		var ca = decodedCookie.split(';');
+		for(var i = 0; i < ca.length; i++) {
+		  var c = ca[i];
+		  while (c.charAt(0) == ' ') {
+		    c = c.substring(1);
+		  }
+		  if (c.indexOf(name) == 0) {
+		    return c.substring(name.length, c.length);
+		  }
+		}
+		return "";
+	}
+	function checkCookie() {
+		var email=getCookie("email");
+		if (email != "") {
+			//alert("Welcome again " + email);
+			goToHome();
+		}
+	}
+</script>
+</body>
+</html>

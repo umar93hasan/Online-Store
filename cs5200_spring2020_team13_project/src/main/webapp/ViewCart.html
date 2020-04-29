@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body {
+  background-image: url(backall.jpg);
+}
+</style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a id="appLogout" onclick="LogOut()">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div id="index-banner">
+
+    <div class="container">
+        <h1 class="header center black-text text-lighten-2">Your Cart Details</h1>
+    </div>
+</div>
+<div>
+    <div class="row">
+      
+        <div class="input-field col s6 center">
+            <a class="btn waves-effect waves-light" href="./buyerHome.html">Home</a>
+            <a class="btn waves-effect waves-light" onclick="checkOut()">CheckOut</a>
+ 
+        </div>
+    </div>
+    <div class="row">
+        <table id="table" >
+            <thead>
+         <tr><th>Id</th><th>Name</th><th>Price(USD)</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+</script>
+<script>
+
+</script>
+<script>
+$(document).ready(function() {
+	$('select').material_select();
+	
+	var cart_ids=getCookie("cart");
+	if(cart_ids==undefined || cart_ids==""){
+		//alert("Nothing To Checkout. Add Products to Cart First!!");
+		return;
+	}
+
+     fetch('./api/cartproducts/'+cart_ids, {
+         method: 'get',
+         headers: {
+             'Accept': 'application/json',
+             'Content-Type': 'application/json'
+         },
+       //  body: JSON.stringify(data)
+     }).then(function(response) {
+         return response.json();
+     }).then(function(data) {
+         // response.json();
+         console.log(data);
+
+         let table = '';
+         let rows = data.length;
+                          
+         for (let r = 0; r < rows; r++) {
+             table += '<tr class="row">';
+             table += '<td>' + data[r].id + '</td>';
+             table += '<td>' + data[r].name + '</td>';
+             table += '<td>' + data[r].price + '</td>';             
+             table += '<td>' + '<button type="button" class="btn waves-effect waves-light"  id=' + data[r].id + ' onclick="removeFromCart(id)">Remove Item</a>' + '</td>';             
+             table += '</tr>';
+         }
+         
+         $('#table').find('tbody').empty();
+         $("#table").append(table);
+                  
+                 
+     });
+});
+
+
+
+
+function checkOut() {
+	
+	var cart_ids=getCookie("cart");
+	if(cart_ids==undefined || cart_ids==""){
+		alert("Nothing To Checkout. Add Products to Cart First!!");
+		return;
+	}
+	var data = getCookie("email");
+	data = data.concat(' ').concat(getCookie("cart"));
+	fetch("./api/order/create", {
+        method: 'post',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(function (response) {
+        return response.json();
+    }).then((data) => {                
+    	alert("Order Placed Successfully. Stay Indoors during COVID19 !!");
+    	clearCart();
+    	window.location.href = './ViewOrder.html';
+    });
+	
+}
+
+
+function removeFromCart(id){
+	var idStr = id.toString();
+	var cartItems = getCookie("cart").split(' ');
+    const index = cartItems.indexOf(idStr);
+    if (index > -1) {
+    	cartItems.splice(index, 1);
+    }
+    cartItems = cartItems.join(' ');
+    setCookie("cart",cartItems,1);
+    window.location.href = './ViewCart.html';
+    
+}
+
+function clearCart(){
+	setCookie("cart",'',1);
+}
+
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+
+function setCookie(cname,cvalue,exdays) {
+	  var d = new Date();
+	  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	  var expires = "expires=" + d.toGMTString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+</script>
+
+
+<script>
+function checkUser() {
+	var userType=getCookie("userType");
+	if (userType != "buyer") {		
+		document.location.href = "./index.html";
+	}
+}
+
+$(function() {
+	checkUser();
+});      
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+</body>
+
+</html>
+

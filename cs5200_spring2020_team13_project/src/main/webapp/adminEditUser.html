@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	  background-image: url(backall.jpg);
+	
+}
+
+* {
+	box-sizing: border-box
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+	width: 100%;
+	padding: 15px;
+	margin: 5px 0 22px 0;
+	display: inline-block;
+	border: none;
+	background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+	background-color: #ddd;
+	outline: none;
+}
+
+hr {
+	border: 1px solid #f1f1f1;
+	margin-bottom: 25px;
+}
+
+/* Set a style for all buttons */
+button {
+	background-color: #4CAF50;
+	color: white;
+	padding: 14px 20px;
+	margin: 8px 0;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	opacity: 0.9;
+}
+
+button:hover {
+	opacity: 1;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+	padding: 14px 20px;
+	background-color: #f44336;
+}
+
+/* Float cancel and signup buttons and add an equal width */
+.cancelbtn, .signupbtn {
+	float: left;
+	width: 50%;
+}
+
+/* Add padding to container elements */
+.container {
+	padding: 16px;
+}
+
+/* Clear floats */
+.clearfix::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
+/* Change styles for cancel button and signup button on extra small screens */
+@media screen and (max-width: 300px) {
+	.cancelbtn, .signupbtn {
+		width: 100%;
+	}
+}
+</style>
+<meta charset="ISO-8859-1">
+<title>Edit User</title>
+<link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Welcome Buyer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+</head>
+<body>
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a id="appLogout" onclick = "LogOut()" >Logout</a></li>
+        </ul>
+    </div>
+</nav>
+	<form id="reg-form" style="border: 1px solid #ccc; width: 500px; position: relative; margin: 0 auto; overflow: hidden; text-align: center;">
+		<div class="container">
+		
+			<h1>Edit User</h1>
+	    	<hr>
+	    	<label for="email" style="float: left;"><b>Email / Username</b></label>
+    		<input id="email" type="text" name="email" readonly required>
+
+	    	<label for="password" style="float: left;"><b>Password</b></label>
+		    <input id="password" type="password" name="password" required>		
+	
+			<label for="firstName" style="float: left;"><b>First Name</b></label>
+			<input id="firstName" type="text" name="firstName" required>
+							
+			<label for="lastName" style="float: left;"><b>Last Name</b></label> 
+			<input id="lastName" type="text" name="lastName" required>
+			
+			<input id="userType" type="hidden" name="userType" required>							
+				
+			<div class="clearfix">
+	      		<button type="button" class="cancelbtn" onClick="goToHome()">Cancel</button>
+	      		<button type="button" class="signupbtn" onClick="editUser()">Update</button>
+	    	</div>
+			
+		</div>
+	</form>
+	
+<script>
+$(document).ready(function(){
+	checkAdmin();
+	
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const email = urlParams.get('email');
+	$.getJSON("./api/admin/getUser/"+email, function(data){
+		$("#email").val(data.email);
+		$("#password").val(data.password);
+		$("#firstName").val(data.firstName);
+		$("#lastName").val(data.lastName);
+		$('#userType').val(data.userType)
+	});
+});
+
+function goToHome(){
+	document.location.href = "./adminHome.html";
+}
+
+function editUser() {
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;        
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const userType = document.getElementById("userType").value;
+    var isSeller = true;
+    if(userType=="buyer"){
+    	isSeller = false;
+    }
+    
+    /*if(!validateEmail(email)){
+    	alert("Enter a valid email.");
+    	return;
+    }
+    if(!validatePassword(password)){
+    	alert("Password must 6 or more characters.");
+    	return;
+    }*/
+    if(password.length==0){
+    	alert("Enter password");
+    	return;
+    }
+    if(firstName.length==0 || lastName==0){
+    	alert("Please fill out all fields.");
+    	return;
+    }
+        
+    var url = "./api/admin/updateBuyer";
+    
+    if(isSeller){
+    	url = "./api/admin/updateSeller";
+    }
+    
+    var data = {
+            "firstName": firstName,
+            "lastName": lastName,            
+            "email": email,
+            "password": password
+        };
+    fetch(url, {
+        method: 'put',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(function (response) {
+        return response.json();
+    }).then((data) => {            
+       	alert("Updated");
+       	goToHome();            
+    })
+    
+}
+
+function validateEmail(email) {
+	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return re.test(email);
+}
+
+function validatePassword(pw){
+	if(pw.length<6)
+		return false;
+	return true;
+}
+
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+function checkAdmin() {
+	var admin=getCookie("userType");
+	if (admin != "admin") {		
+		document.location.href = "./index.html";
+	}
+}
+
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+
+</script>
+
+</body>
+</html>

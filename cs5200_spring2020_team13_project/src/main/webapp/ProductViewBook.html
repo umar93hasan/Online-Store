@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<head>
+<style>
+body {
+  background-image: url(backall.jpg);
+}
+</style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>View</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+</head>
+<body>
+	<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a onclick = "LogOut()" id="appLogout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div id="index-banner">
+
+    <div class="container">
+        <h1 class="header center black-text text-lighten-2">Book Details</h1>
+    </div>
+</div>
+<div>
+    <div class="row">
+     
+        </div> 
+        <div class="input-field col s6 center">
+            <a class="btn waves-effect waves-light" href="./buyerHome.html">Home</a>
+           <a class="btn waves-effect waves-light" href="./searchProductsBuyer.html">Go Back</a>
+            
+        </div>
+    </div>
+    <div class="row">
+        <table id="table" >
+            <thead>
+         
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+  
+	
+<script>
+	$(document).ready(function(){
+		
+		const queryString = window.location.search;
+
+		const urlParams = new URLSearchParams(queryString);
+
+		var item = urlParams.get('item');
+		
+		//alert(item);
+		
+		fetch('./api/product/'+item, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            console.log(data);
+
+            let table = '';
+            let rows = data;
+            
+            //alert(rows);
+			let tablehead = '<tr><th>Id</th><th>Name</th><th>Price(USD)</th><th>Author</th><th>Genre</th><th>Publisher</th></tr>';
+			
+
+            //for (let r = 0; r < rows; r++) {
+                table += '<tr class="row">';
+                table += '<td>' + data.id + '</td>';
+                table += '<td>' + data.name + '</td>';
+                table += '<td>' + data.price + '</td>';
+                table += '<td>' + data.author + '</td>';
+                table += '<td>' + data.genre + '</td>';
+                table += '<td>' + data.publisher + '</td>';
+                table += '<td> <img src="open-book.png" alt="Avatar" class="avatar"></td>';
+
+                table += '</tr>';
+            //}
+            //alert(table);
+            
+            //$('#table').find('tbody').empty();
+            $('#table').find('tbody').empty();
+            $("#table").append(tablehead);
+            $("#table").append(table);
+
+           
+        })
+		
+	});
+	
+	
+	
+	function LogOut(){
+		//alert('here');
+		document.cookie="email=";
+		document.cookie="firstName=";
+		document.cookie="lastName=";
+		document.cookie="userType=";
+		document.cookie="cart=";
+		//alert('Logged Out');
+		window.location.href = './index.html';
+
+	}
+	
+    function checkUser() {
+    	var userType=getCookie("userType");
+    	if (userType != "buyer") {		
+    		document.location.href = "./index.html";
+    	}
+    }
+
+    $(function() {
+    	checkUser();
+    });  
+	
+	
+</script>
+
+</body>
+</html>

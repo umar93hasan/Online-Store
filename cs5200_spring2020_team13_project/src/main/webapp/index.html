@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+}
+
+body {
+  background-image: url(back5.jpg);
+}
+
+.tab1cards {
+  display: flex;
+  flex-direction: row;
+}
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+  padding: 2px 16px;
+}
+
+
+</style>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
+<meta charset="UTF-8">
+<title>Online Store</title>
+</head>
+<body >
+	<nav class="lightpink">
+		<div class="nav-wrapper">
+			<a href="./index.html" class="brand-logo">COVID 19 Store</a>
+			<ul class="right hide-on-med-and-down">
+			<i style="color:black">A great place to buy/sell Books and Games during quarantine....</i>
+			</ul>
+		</div>
+	</nav>
+	
+
+
+	<div class="input-field col s6 center">
+	
+	<div class="tab1cards">
+
+	<div class="card">
+	  <img src="new.png" alt="Avatar" style="width:15%">
+	  <div class="container">
+<a class="btn waves-effect waves-light" href="./registerNewUser.html">New
+			User Registration</a>	    <p>New User? Register Here</p> 
+	  </div>
+	</div>
+	
+	<div class="card">
+	  <img src="exist.png" alt="Avatar" style="width:15%">
+	  <div class="container">
+<a class="btn waves-effect waves-light"
+			href="./login.html">Login</a>
+				    <p>Already a Customer? Start Selling or Shopping Now !</p> 
+	  </div>
+	</div>
+	
+	</div>
+		 
+		
+	</div>
+	<script>
+	function LogOut(){
+		//alert('here');
+		document.cookie="email=";
+		document.cookie="firstName=";
+		document.cookie="lastName=";
+		document.cookie="userType=";
+		document.cookie="cart=";
+		//alert('Logged Out');
+
+	}
+	</script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<style>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 40%;
+}
+
+body {
+  background-image: url(backall.jpg);
+}
+
+.card2 {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+}
+.tab1cards {
+  display: flex;
+  flex-direction: row;
+}
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+  padding: 2px 16px;
+}
+
+
+</style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Welcome Seller</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a onclick = "LogOut()" id="appLogout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="input-field col s6 center">
+<div class="tab1cards">
+
+	<div class="card">
+	  <img src="address.png" alt="Avatar" style="width:15%">
+	  <div class="container">
+    	<a class="btn waves-effect waves-light" href="./addAddress.html">Add Address</a>
+	    <p>Help Us Get Your Current Address</p> 
+	  </div>
+	</div>
+	
+	<div class="card">
+	  <img src="addresses.jpg" alt="Avatar" style="width:15%">
+	  <div class="container">
+   		 <a class="btn waves-effect waves-light" href="./viewAddressesSeller.html">View Saved Addresses</a>
+	    <p>You Can Delete Your Old Addresses Here</p> 
+	  </div>
+	</div>
+	
+	
+	
+	<div class="card">
+	  <img src="profile.jpg" alt="Avatar" style="width:15%">
+	  <div class="container">
+   		 <a class="btn waves-effect waves-light" href="./profile.html">Your Profile</a>
+	    <p>Update Your Profile</p> 
+	  </div>
+	</div>
+	
+	
+	</div>
+    
+    <div class="tab1cards">
+    
+	<div class="card2">
+	  <img src="sell.png" alt="Avatar" style="width:15%">
+	  <div class="container">
+	    <a id = "sellSearch" class="btn waves-effect waves-light" href="./SearchProductsSeller.html">Sell Products</a>
+	    <p>Various Books And Games Available To Sell</p> 
+	  </div>
+	</div>
+    
+    
+	<div class="card2">
+	  <img src="checkprod.jpg" alt="Avatar" style="width:15%">
+	  <div class="container">
+    	<a id = "checkProductsSold" class="btn waves-effect waves-light" href="./SellerProducts.html">Check Products You Sold</a>
+	    <p>Check Products You Listed For Sale</p> 
+	  </div>
+	</div>
+    </div>
+</div>
+<script>
+
+$(document).ready(function(){
+	var email=getCookie("email");
+});
+	
+	
+
+
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+
+ 
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+
+function checkUser() {
+	var userType=getCookie("userType");
+	if (userType != "seller") {		
+		document.location.href = "./index.html";
+	}
+}
+
+$(function() {
+	checkUser();
+});   
+</script>
+
+
+</body>
+
+</html>

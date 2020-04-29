@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	  background-image: url(backall.jpg);
+	
+}
+
+* {
+	box-sizing: border-box
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+	width: 100%;
+	padding: 15px;
+	margin: 5px 0 22px 0;
+	display: inline-block;
+	border: none;
+	background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+	background-color: #ddd;
+	outline: none;
+}
+
+hr {
+	border: 1px solid #f1f1f1;
+	margin-bottom: 25px;
+}
+
+/* Set a style for all buttons */
+button {
+	background-color: #4CAF50;
+	color: white;
+	padding: 14px 20px;
+	margin: 8px 0;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	opacity: 0.9;
+}
+
+button:hover {
+	opacity: 1;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+	padding: 14px 20px;
+	background-color: #f44336;
+}
+
+/* Float cancel and signup buttons and add an equal width */
+.cancelbtn, .signupbtn {
+	float: left;
+	width: 50%;
+}
+
+/* Add padding to container elements */
+.container {
+	padding: 16px;
+}
+
+/* Clear floats */
+.clearfix::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
+/* Change styles for cancel button and signup button on extra small screens */
+@media screen and (max-width: 300px) {
+	.cancelbtn, .signupbtn {
+		width: 100%;
+	}
+}
+</style>
+<meta charset="ISO-8859-1">
+<title>Add New Address</title>
+ <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Add address</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+</head>
+<body>
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a id="appLogout" onclick = "LogOut()" >Logout</a></li>
+        </ul>
+    </div>
+</nav>
+	<form id="reg-form" style="border: 1px solid #ccc; width: 500px; position: relative; margin: 0 auto; overflow: hidden; text-align: center;">
+		<div class="container">
+		
+			<h1>Add Address</h1>
+	    	<p>Please fill in this form to add a new address.</p>
+	    	<hr>
+	    	<label for="street1" style="float: left;"><b>Street 1</b></label>
+    		<input id="street1" type="text" placeholder="Street1" name="street1" required>
+
+	    	<label for="street2" style="float: left;"><b>Street 2</b></label>
+		    <input id="street2" type="text" placeholder="Street2" name="street2" required>		
+	
+			<label for="city" style="float: left;"><b>City</b></label>
+			<input id="city" placeholder="City" type="text" name="city" required>
+							
+			<label for="state" style="float: left;"><b>State</b></label> 
+			<input id="state" placeholder="State" type="text" name="state" required>
+			
+			<label for="zip" style="float: left;"><b>Zip</b></label>
+			<input id="zip" placeholder="Zip" type="text" name="zip" required>
+								
+				
+			<div class="clearfix">
+	      		<button type="button" class="cancelbtn" onClick="goToHome()">Cancel</button>
+	      		<button type="button" class="signupbtn" onClick="addAddress()">Add Address</button>
+	    	</div>
+			
+		</div>
+	</form>
+
+<script>
+function addAddress(){
+	const street1 = document.getElementById("street1").value;
+    const street2 = document.getElementById("street2").value;        
+    const city = document.getElementById("city").value;
+    const state = document.getElementById("state").value;
+    const zip = document.getElementById("zip").value;
+    const residentEmail = getCookie("email");
+    
+    if(street1.length==0 || street2.length==0 || city.length==0 || state.length==0 || zip.length==0){
+    	alert("All fields are required");
+    	return;
+    }
+    
+    var data = {
+    		"residentEmail": residentEmail,
+    		"street1": street1,
+    		"street2": street2,
+    		"city": city,
+    		"state": state,
+    		"zip": zip
+    }
+    
+    fetch("./api/address/insert", {
+        method: 'post',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(function (response) {
+        return response.json();
+    }).then((data) => {                
+        alert("Address Added");
+        goToHome();       
+    });
+    
+}
+
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+
+function goToHome(){
+	if(getCookie("userType")=="buyer"){
+		document.location.href = "./buyerHome.html";
+    }else{
+    	document.location.href = "./SellerHome.html";
+    }		
+}
+
+function setInputFilter(textbox, inputFilter) {
+	  ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+	    textbox.addEventListener(event, function() {
+	      if (inputFilter(this.value)) {
+	        this.oldValue = this.value;
+	        this.oldSelectionStart = this.selectionStart;
+	        this.oldSelectionEnd = this.selectionEnd;
+	      } else if (this.hasOwnProperty("oldValue")) {
+	        this.value = this.oldValue;
+	        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+	      } else {
+	        this.value = "";
+	      }
+	    });
+	  });
+	}
+	
+setInputFilter(document.getElementById("zip"), function(value) {
+	  return /^-?\d*$/.test(value); });
+
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+
+function checkUser() {
+	var userType=getCookie("userType");
+	if (userType == "") {		
+		document.location.href = "./index.html";
+	}
+}
+
+$(function() {
+	checkUser();
+});
+</script>
+
+</body>
+</html>

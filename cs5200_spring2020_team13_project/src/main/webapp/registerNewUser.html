@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+body {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+	box-sizing: border-box
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+	width: 100%;
+	padding: 15px;
+	margin: 5px 0 22px 0;
+	display: inline-block;
+	border: none;
+	background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+	background-color: #ddd;
+	outline: none;
+}
+
+hr {
+	border: 1px solid #f1f1f1;
+	margin-bottom: 25px;
+}
+
+body {
+  background-image: url(back7.jpg);
+}
+
+/* Set a style for all buttons */
+button {
+	background-color: #4CAF50;
+	color: white;
+	padding: 14px 20px;
+	margin: 8px 0;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	opacity: 0.9;
+}
+
+button:hover {
+	opacity: 1;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+	padding: 14px 20px;
+	background-color: #f44336;
+}
+
+/* Float cancel and signup buttons and add an equal width */
+.cancelbtn, .signupbtn {
+	float: left;
+	width: 50%;
+}
+
+/* Add padding to container elements */
+.container {
+	padding: 16px;
+}
+
+/* Clear floats */
+.clearfix::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
+/* Change styles for cancel button and signup button on extra small screens */
+@media screen and (max-width: 300px) {
+	.cancelbtn, .signupbtn {
+		width: 100%;
+	}
+}
+</style>
+<meta charset="ISO-8859-1">
+<title>Register New User</title>
+
+</head>
+<body>
+	<form id="reg-form" style="border: 1px solid #ccc; width: 500px; position: relative; margin: 0 auto; overflow: hidden; text-align: center;">
+		<div class="container">
+		
+			<h1>Sign Up</h1>
+	    	<p>Please Fill In This Form To Create An Account</p>
+	    	<hr>
+	    	<label for="email" style="float: left;"><b>Email / Username</b></label>
+    		<input id="email" type="text" placeholder="xyz@example.com" name="email" required>
+
+	    	<label for="password" style="float: left;"><b>Password</b></label>
+		    <input id="password" type="password" placeholder="password" name="password" required>		
+	
+			<label for="firstName" style="float: left;"><b>First Name</b></label>
+			<input id="firstName" placeholder="John" type="text" name="firstName" required>
+							
+			<label for="lastName" style="float: left;"><b>Last Name</b></label> 
+			<input id="lastName" placeholder="Doe" type="text" name="lastName" required>
+					
+			 <label>
+	      		<input id="seller" type="checkbox" name="seller" style="margin-bottom:15px"> Register as a Seller
+	    	</label>
+			
+				
+			<div class="clearfix">
+	      		<button type="button" class="cancelbtn" onClick="goToIndex()">Cancel</button>
+	      		<button type="button" class="signupbtn" onClick="createUser()">Sign Up</button>
+	    	</div>
+			
+		</div>
+	</form>
+
+
+	<script>
+	$(document).ready(function(){
+		checkCookie(); 
+	});
+	
+	function goToIndex(){
+		document.location.href = "./index.html";
+	}
+	
+    function createUser() {
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;        
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        var isSeller = document.getElementById("seller").checked;
+        
+        /*if(!validateEmail(email)){
+        	alert("Enter a valid email.");
+        	return;
+        }
+        if(!validatePassword(password)){
+        	alert("Password must 6 or more characters.");
+        	return;
+        }*/
+        if(email.length==0 || password.length==0){
+        	alert("Enter email and password");
+        	return;
+        }
+        if(firstName.length==0 || lastName==0){
+        	alert("Please fill out all fields.");
+        	return;
+        }
+        
+        
+        var url = "./api/buyer/insert";
+        
+        if(isSeller){
+        	url = "./api/seller/insert";
+        }
+        
+        var data = {
+            "firstName": firstName,
+            "lastName": lastName,            
+            "email": email,
+            "password": password
+        };
+        
+        fetch(url, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(function (response) {
+            return response.json();
+        }).then((data) => {
+            //console.log(data);
+            if(data.message=="Email Already Registered"){
+            	alert("Email Already Registered");
+            }else{
+            	alert("User Created");
+            	goToIndex();
+            }
+        })
+
+    }
+    
+    function validateEmail(email) {
+		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(email);
+    }
+    
+    function validatePassword(pw){
+    	if(pw.length<6)
+    		return false;
+    	return true;
+    }
+    function getCookie(cname) {
+		var name = cname + "=";
+		var decodedCookie = decodeURIComponent(document.cookie);
+		var ca = decodedCookie.split(';');
+		for(var i = 0; i < ca.length; i++) {
+		  var c = ca[i];
+		  while (c.charAt(0) == ' ') {
+		    c = c.substring(1);
+		  }
+		  if (c.indexOf(name) == 0) {
+		    return c.substring(name.length, c.length);
+		  }
+		}
+		return "";
+	}
+	function checkCookie() {
+		var email=getCookie("email");
+		if (email != "") {
+			alert("Welcome again " + email);
+			goToHome();
+		}
+	}
+	
+	function goToHome(){
+		if(getCookie("userType")=="buyer"){    		
+    		document.location.href = "./buyerHome.html";
+    	}else if(getCookie("userType")=="seller"){
+    		document.location.href = "./SellerHome.html";
+    	}else if(getCookie("userType")=="admin"){
+    		document.location.href = "./adminHome.html";
+    	}		
+	}
+	
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body {
+  background-image: url(backall.jpg);
+}
+</style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Order Details</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<nav class="yellow">
+    <div class="nav-wrapper">
+        <a href="./index.html" class="brand-logo">COVID 19 Store</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a id="appLogout" onclick="LogOut()">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="input-field col s6 center">
+            <a class="btn waves-effect waves-light" href="./buyerHome.html">Home</a> 
+            <a class="btn waves-effect waves-light" href="./ViewOrder.html">Go Back</a>
+               
+</div>
+<div class="container">
+	<div class="row">
+        <div class="col s12 centered">
+            <b>Games You Bought:</b>
+        </div>
+    </div>
+    <div class="row">
+        <table id="table1">
+            <thead>
+            
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="container">
+	<div class="row">
+        <div class="col s12 centered">
+            <b>Books You Bought:</b>
+        </div>
+    </div>
+    <div class="row">
+        <table id="table2">
+            <thead>
+           
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+	    c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+	    return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+
+$(document).ready(function(){
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const orderId = urlParams.get('id');
+    
+    fetch('./api/orderItem/'+orderId, {
+        method: 'get',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        console.log(data);
+
+        let tabledata1 = '';
+        let tabledata2 = '';
+
+        let rows = data.length;
+        
+        let tablehead1 = '<tr><th>Id</th><th>Name</th><th>Price(USD)</th><th>Controller Support</th></tr>';
+		let tablehead2 = '<tr><th>Id</th><th>Name</th><th>Price(USD)</th><th>Author</th><th>Genre</th><th>Publisher</th></tr>';
+
+        
+
+        for (let r = 0; r < rows; r++) {
+        	
+        if(data[r].productItem.genre == null ) {
+            tabledata1 += '<tr class="row">';
+            tabledata1 += '<td>' + data[r].productItem.id + '</td>';
+            tabledata1 += '<td>' + data[r].productItem.name + '</td>';
+            tabledata1 += '<td>' + data[r].productItem.price + '</td>';
+            if(data[r].productItem.controllerSupport == 'false') {
+            	tabledata1 += '<td>' +'No' + '</td>';
+            }
+            else {
+            	tabledata1 += '<td>' + 'Yes' + '</td>';
+            }
+            tabledata1 += '</tr>';
+        	
+        	}
+        
+        
+        if(data[r].productItem.genre != null ) {
+    		
+                tabledata2 += '<tr class="row">';
+                tabledata2 += '<td>' + data[r].productItem.id + '</td>';
+                tabledata2 += '<td>' + data[r].productItem.name + '</td>';
+                tabledata2 += '<td>' + data[r].productItem.price + '</td>';
+                tabledata2 += '<td>' + data[r].productItem.author + '</td>';
+                tabledata2 += '<td>' + data[r].productItem.genre + '</td>';
+                tabledata2 += '<td>' + data[r].productItem.publisher + '</td>';
+                tabledata2 += '</tr>';
+            
+          
+            }
+        
+        $('#table1').find('tbody').empty();
+        $("#table1").append(tablehead1);
+        $("#table1").append(tabledata1);
+        
+        
+        
+        $('#table2').find('tbody').empty();
+        $("#table2").append(tablehead2);
+        $("#table2").append(tabledata2);
+
+        
+        }
+        
+        
+    });
+});
+
+  
+</script>
+
+<script>
+function LogOut(){
+	//alert('here');
+	document.cookie="email=";
+	document.cookie="firstName=";
+	document.cookie="lastName=";
+	document.cookie="userType=";
+	document.cookie="cart=";
+	//alert('Logged Out');
+	window.location.href = './index.html';
+
+}
+
+function checkUser() {
+	var userType=getCookie("userType");
+	if (userType != "buyer") {		
+		document.location.href = "./index.html";
+	}
+}
+
+$(function() {
+	checkUser();
+});  
+</script>
+</body>
+
+</html>
